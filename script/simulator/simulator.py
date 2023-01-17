@@ -6,6 +6,8 @@ from nav_msgs.msg import Odometry
 from racecar_msgs.msg import ServoMsg
 from tf.transformations import quaternion_about_axis
 import threading
+from dynamic_reconfigure.server import Server
+from racecar_interface.cfg import simConfig
 
 class Simulator:
     def __init__(self):
@@ -18,6 +20,8 @@ class Simulator:
         init_y = rospy.get_param('~init_y', 0)
         init_yaw = rospy.get_param('~init_yaw', 0)
         
+        self.sigma = np.zeros(2)
+        
         self.current_state = np.array([init_x, init_y, 0, init_yaw])        
         self.dyn = Bicycle4D(1.0/self.pub_rate)
         
@@ -26,7 +30,15 @@ class Simulator:
         self.odom_pub = rospy.Publisher(odom_topic, Odometry, queue_size=1)
         self.control_sub = rospy.Subscriber(control_topic, ServoMsg, self.control_callback, queue_size=1)
         
+        self.dyn_server = Server(simConfig, self.reconfigure_callback)
+        
         threading.Thread(target=self.simulation_thread).start()
+        
+    def reconfigure_callback(self, config, level):
+        self.sigma[0] = config['throttle_noise_sigma']
+        self.sigma[1] = config['steer_noise_sigma']
+        rospy.loginfo(f"Simulation Noise Updated to {self.sigma}")
+        return config
         
     def control_callback(self, msg):
         control = np.array([msg.throttle, msg.steer])
@@ -38,7 +50,7 @@ class Simulator:
             # read control
             control = self.control_buffer.readFromRT()
             if control is not None:
-                self.current_state = self.dyn.integrate(self.current_state, control)
+                self.current_state = self.dyn.integrate(self.current_state, control, self.sigma)
             
             self.current_state[3] = np.arctan2(np.sin(self.current_state[3]), np.cos(self.current_state[3]))
             odom_msg = Odometry()

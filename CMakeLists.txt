@@ -86,12 +86,12 @@ find_package(catkin REQUIRED COMPONENTS
 ##     find_package(catkin REQUIRED COMPONENTS ...)
 ##   * uncomment the "generate_dynamic_reconfigure_options" section below
 ##     and list every .cfg file to be processed
-
+find_package(catkin REQUIRED COMPONENTS dynamic_reconfigure)
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/sim.cfg
+)
+
 
 
 ###################################
@@ -106,9 +106,10 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES yolact_ros
-  CATKIN_DEPENDS rospy std_msgs racecar_msgs tf2
+  CATKIN_DEPENDS rospy std_msgs racecar_msgs tf2 dynamic_reconfigure
 #  DEPENDS system_lib
 )
+
 
 ###########
 ## Build ##
