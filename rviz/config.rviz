@@ -4,9 +4,9 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Grid1
-      Splitter Ratio: 0.5
-    Tree Height: 1648
+        - /Previous Pose1/Shape1
+      Splitter Ratio: 0.7321428656578064
+    Tree Height: 1502
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -32,20 +32,54 @@ Panels:
     refresh_freq: 40
     topic_0_color: 0
     topic_0_name: /vis/speed
-    topic_0_thickness: 3
+    topic_0_thickness: 2
     topic_0_type: std_msgs/Float32
-    topic_1_color: 1
-    topic_1_name: /vis/steer
-    topic_1_thickness: 3
-    topic_1_type: std_msgs/Float32
-    topic_2_color: 2
-    topic_2_name: /vis/throttle
-    topic_2_thickness: 3
-    topic_2_type: std_msgs/Float32
-    w_time: 20
+    w_time: 2
     window_time_enable: true
-    y_max: 10
-    y_min: -10
+    y_max: 5
+    y_min: -5
+    yaxis_rescale_auto: false
+  - Class: graph_rviz_plugin/Line graph
+    Name: Line graph
+    export_directory: ""
+    legend_enable: true
+    refresh_freq: 40
+    topic_0_color: 1
+    topic_0_name: /vis/steer
+    topic_0_thickness: 2
+    topic_0_type: std_msgs/Float32
+    w_time: 10
+    window_time_enable: true
+    y_max: 1
+    y_min: -1
+    yaxis_rescale_auto: false
+  - Class: graph_rviz_plugin/Line graph
+    Name: Line graph
+    export_directory: ""
+    legend_enable: true
+    refresh_freq: 40
+    topic_0_color: 4
+    topic_0_name: /vis/throttle
+    topic_0_thickness: 2
+    topic_0_type: std_msgs/Float32
+    w_time: 10
+    window_time_enable: true
+    y_max: 1
+    y_min: -1
+    yaxis_rescale_auto: false
+  - Class: graph_rviz_plugin/Line graph
+    Name: Line graph
+    export_directory: ""
+    legend_enable: true
+    refresh_freq: 40
+    topic_0_color: 0
+    topic_0_name: /vis/speed
+    topic_0_thickness: 2
+    topic_0_type: std_msgs/Float32
+    w_time: 10
+    window_time_enable: true
+    y_max: 5
+    y_min: -1
     yaxis_rescale_auto: false
 Preferences:
   PromptSaveOnExit: true
@@ -69,7 +103,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 30
+      Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz/MarkerArray
@@ -80,12 +114,71 @@ Visualization Manager:
         truck: true
       Queue Size: 100
       Value: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: false
+      Enabled: true
+      Keep: 20
+      Name: Previous Pose
+      Position Tolerance: 0.10000000149011612
+      Queue Size: 10
+      Shape:
+        Alpha: 0.20000000298023224
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 255; 255; 127
+        Head Length: 0.05000000074505806
+        Head Radius: 0.05000000074505806
+        Shaft Length: 0.5
+        Shaft Radius: 0.019999999552965164
+        Value: Arrow
+      Topic: /sim_pose
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 0; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Planned Trajectory
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /planning/trajectory
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
     Fixed Frame: map
-    Frame Rate: 30
+    Frame Rate: 50
   Name: root
   Tools:
     - Class: rviz/Interact
@@ -117,20 +210,20 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 120
+      Scale: 107.94515991210938
       Target Frame: <Fixed Frame>
       X: 0
-      Y: 5
+      Y: 2
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 2077
+  Height: 1979
   Hide Left Dock: false
   Hide Right Dock: false
   Line graph:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001ea0000073ffc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000009300fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000005c0000073f0000014200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c0000026100000001000004980000073ffc0200000004fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000005c000003bc0000010100fffffffb00000014004c0069006e0065002000670072006100700068010000042200000379000000a200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000013b800000050fc0100000002fb0000000800540069006d00650100000000000013b8000004d200fffffffb0000000800540069006d0065010000000000000450000000000000000000000d220000073f00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd000000040000000000000238000006ddfc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000009300fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb00000014004c0069006e0065002000670072006100700068010000005c00000258000000a200fffffffb00000014004c0069006e006500200067007200610070006801000002be0000025d000000a200fffffffb00000014004c0069006e0065002000670072006100700068010000052500000214000000a200fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c0000026100000001000001c2000006ddfc0200000004fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fc0000005c000006dd000001720100002ffa000000000100000002fb000000100044006900730070006c0061007900730100000000ffffffff0000018900fffffffb0000000a005600690065007700730100000f20000004980000011a00fffffffb00000014004c0069006e00650020006700720061007000680200000bae000001f20000049800000323fb0000001200530065006c0065006300740069006f006e010000025a000000b2000000000000000000000002000013b8000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000efb00000050fc0100000002fb0000000800540069006d0065010000000000000efb000004d200fffffffb0000000800540069006d0065010000000000000450000000000000000000000aed000006dd00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -139,6 +232,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 5048
-  X: 72
-  Y: 46
+  Width: 3835
+  X: 0
+  Y: 32

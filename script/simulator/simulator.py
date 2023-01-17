@@ -4,7 +4,7 @@ from .realtime_buffer import RealtimeBuffer
 from .dynamics import Bicycle4D
 from nav_msgs.msg import Odometry
 from racecar_msgs.msg import ServoMsg
-from tf.transformations import quaternion_from_euler
+from tf.transformations import quaternion_about_axis
 import threading
 
 class Simulator:
@@ -40,6 +40,7 @@ class Simulator:
             if control is not None:
                 self.current_state = self.dyn.integrate(self.current_state, control)
             
+            self.current_state[3] = np.arctan2(np.sin(self.current_state[3]), np.cos(self.current_state[3]))
             odom_msg = Odometry()
             odom_msg.header.stamp = rospy.Time.now()
             odom_msg.header.frame_id = 'map'
@@ -47,7 +48,7 @@ class Simulator:
             odom_msg.pose.pose.position.y = self.current_state[1]
             odom_msg.pose.pose.position.z = 0
             
-            q = quaternion_from_euler(0, 0, self.current_state[3])
+            q = quaternion_about_axis(self.current_state[3], (0,0,1))
             odom_msg.pose.pose.orientation.x = q[0]
             odom_msg.pose.pose.orientation.y = q[1]
             odom_msg.pose.pose.orientation.z = q[2]
