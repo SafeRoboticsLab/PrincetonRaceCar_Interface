@@ -8,6 +8,8 @@ from tf.transformations import quaternion_about_axis
 import threading
 from dynamic_reconfigure.server import Server
 from racecar_interface.cfg import simConfig
+from racecar_interface.srv import Reset
+from std_srvs.srv import Empty, EmptyResponse
 
 class Simulator:
     def __init__(self):
@@ -32,8 +34,15 @@ class Simulator:
         
         self.dyn_server = Server(simConfig, self.reconfigure_callback)
         
-        threading.Thread(target=self.simulation_thread).start()
+        self.reset_srv = rospy.Service('/simulation/reset', Reset, self.reset_cb)
         
+        threading.Thread(target=self.simulation_thread).start()
+    
+    def reset_cb(self, req):
+        self.current_state = np.array([req.x, req.y, 0, req.yaw])
+        rospy.loginfo(f"Simulation Reset to {self.current_state}")
+        return True
+    
     def reconfigure_callback(self, config, level):
         self.sigma[0] = config['throttle_noise_sigma']
         self.sigma[1] = config['steer_noise_sigma']
