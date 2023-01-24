@@ -29,6 +29,10 @@
         <arg name="control_topic" value="$(arg control_topic)" />
     </include>
 
+    <include file="$(find racecar_routing)/launch/routing.launch" >
+        <arg name="odom_topic" value="$(arg odom_topic)" />
+    </include>
+
     <node type="rviz" name="rviz" pkg="rviz" 
         args="-d $(find racecar_interface)/rviz/simulation.rviz" />
     
