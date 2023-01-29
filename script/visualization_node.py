@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 import rospy
-import sys, os
 from nav_msgs.msg import Odometry
+from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Float32
 from visualization_msgs.msg import Marker, MarkerArray
-from racecar_msgs.msg import ServoMsg
 
 from tf.transformations import euler_from_quaternion
 import numpy as np
@@ -13,28 +12,26 @@ import copy
 class TruckVis:
     def __init__(self) -> None:
         odom_topic = rospy.get_param('~odom_topic', '/slam_pose')
-        control_topic = rospy.get_param('~control_topic', '/control')
         
         # setup subscribers
         self.pose_sub = rospy.Subscriber(odom_topic, Odometry, self.odometry_callback, queue_size=1)
-        self.control_sub = rospy.Subscriber(control_topic, ServoMsg, self.control_callback, queue_size=1)
         
         # setup publishers
-        self.vis_pub = rospy.Publisher('/vis/truck', MarkerArray, queue_size=1)
-        self.speed_pub = rospy.Publisher('/vis/speed', Float32, queue_size=1)
-        self.throttle_pub = rospy.Publisher('/vis/throttle', Float32, queue_size=1)
-        self.steer_pub = rospy.Publisher('/vis/steer', Float32, queue_size=1)
+        self.car_pub = rospy.Publisher('/vis/truck', MarkerArray, queue_size=1)
+        self.origin_pub = rospy.Publisher('/vis/origin', PoseStamped, queue_size=1)
 
         
     def odometry_callback(self, msg):
-        self.create_marker(msg)
-        self.speed_pub.publish(msg.twist.twist.linear.x)
+        self.visualize_car(msg)
+        self.visualize_origin()
         
-    def control_callback(self, msg):
-        self.throttle_pub.publish(msg.throttle)
-        self.steer_pub.publish(msg.steer)
-        
-    def create_marker(self, msg):
+    def visualize_origin(self):
+        marker = PoseStamped()
+        marker.header.frame_id = 'map'
+        marker.header.stamp = rospy.Time.now()
+        self.origin_pub.publish(marker)
+
+    def visualize_car(self, msg):
         marker_array = MarkerArray()
         
         # Create the vehicle marker
@@ -88,7 +85,7 @@ class TruckVis:
         marker_array.markers.append(arrow)
         
         # publish the marker array
-        self.vis_pub.publish(marker_array)
+        self.car_pub.publish(marker_array)
 
     
 def main():

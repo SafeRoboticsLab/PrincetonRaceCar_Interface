@@ -28,6 +28,6 @@
         args="-d $(find racecar_interface)/rviz/simulation.rviz" />
     
     <node type="rqt_gui" name="rqt_gui" pkg="rqt_gui" 
-        args="--perspective-file $(find racecar_interface)/rviz/rqt.perspective"/>
+        args="--perspective-file $(find racecar_interface)/rviz/rqt_sim.perspective"/>
     
 </launch>
