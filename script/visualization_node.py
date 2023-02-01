@@ -6,6 +6,7 @@ from std_msgs.msg import Float32
 from visualization_msgs.msg import Marker, MarkerArray
 
 from tf.transformations import euler_from_quaternion
+from geometry_msgs.msg import Point
 import numpy as np
 import copy
 
@@ -19,17 +20,60 @@ class TruckVis:
         # setup publishers
         self.car_pub = rospy.Publisher('/vis/truck', MarkerArray, queue_size=1)
         self.origin_pub = rospy.Publisher('/vis/origin', PoseStamped, queue_size=1)
+        self.playground_pub = rospy.Publisher('/vis/playground', Marker, queue_size=1)
 
         
     def odometry_callback(self, msg):
         self.visualize_car(msg)
         self.visualize_origin()
+        self.visualize_playground()
         
     def visualize_origin(self):
         marker = PoseStamped()
         marker.header.frame_id = 'map'
         marker.header.stamp = rospy.Time.now()
         self.origin_pub.publish(marker)
+        
+    def visualize_playground(self):
+        marker = Marker()
+        marker.header.frame_id = 'map'
+        marker.header.stamp = rospy.Time.now()
+        
+        marker.type = 4 # Line Strip
+        marker.ns = 'playground'
+        marker.id = 0
+        marker.action = 0 # ADD/modify
+        marker.scale.x = 0.02
+        
+        pt1 = Point()
+        pt1.x = 0
+        pt1.y = 0
+        pt1.z = 0
+        
+        pt2 = Point()
+        pt2.x = 6.1
+        pt2.y = 0
+        pt2.z = 0
+        
+        pt3 = Point()
+        pt3.x = 6.1
+        pt3.y = 6.1
+        pt3.z = 0
+        
+        pt4 = Point()
+        pt4.x = 0
+        pt4.y = 6.1
+        pt4.z = 0
+        
+        marker.points = [pt1, pt2, pt3, pt4, pt1]
+        
+        marker.color.r = 204/255.0
+        marker.color.g = 0/255.0
+        marker.color.b = 0/255.0
+        marker.color.a = 1.0
+        
+        self.playground_pub.publish(marker)
+        
 
     def visualize_car(self, msg):
         marker_array = MarkerArray()
