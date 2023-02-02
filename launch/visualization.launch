@@ -5,7 +5,7 @@
     <arg name="output"            default="screen"    doc="display output to screen or log file"/>
     <arg name="odom_topic"   default="/SLAM/Pose"    doc="ROS topic for the pose"/>
     <arg name="control_topic"   default="/Control"    doc="ROS topic for control input"/>
-    <arg name="launch_map"     default="false"        doc="launch routing map server"/> 
+    <arg name="launch_map"     default="true"        doc="launch routing map server"/> 
     <arg name="lane_change_cost" default="1" doc="cost of lane change"/>
     
     <node pkg="racecar_interface" type="visualization_node.py" name="visualization_node" output="$(arg output)">
@@ -25,6 +25,6 @@
         args="-d $(find racecar_interface)/rviz/truck.rviz" />
 
     <node type="rqt_gui" name="rqt_gui" pkg="rqt_gui" 
-        args="--perspective-file $(find racecar_interface)/rviz/rqt_sim.perspective"/>
+        args="--perspective-file $(find racecar_interface)/rviz/rqt_truck.perspective"/>
     
 </launch>
