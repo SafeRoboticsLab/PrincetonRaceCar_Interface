@@ -7,10 +7,18 @@
     <arg name="control_topic"   default="/Control"    doc="ROS topic for control input"/>
     <arg name="launch_map"     default="false"        doc="launch routing map server"/>
     <arg name="lane_change_cost" default="1" doc="cost of lane change"/>
+    <arg name="pub_rate"        default="30"            doc="rate at which to publish the pose"/>
+    <arg name="init_x"          default="0"             doc="initial x position"/>
+    <arg name="init_y"          default="0"             doc="initial y position"/>
+    <arg name="init_yaw"        default="0"             doc="initial z position"/>
 
     <node pkg="racecar_interface" type="simulation_node.py" name="simulation_node" output="$(arg output)">
         <param name="odom_topic"           value="$(arg odom_topic)" />
         <param name="control_topic"        value="$(arg control_topic)" />
+        <param name="pub_rate"             value="$(arg pub_rate)" />
+        <param name="init_x"               value="$(arg init_x)" />
+        <param name="init_y"               value="$(arg init_y)" />
+        <param name="init_yaw"             value="$(arg init_yaw)" />
     </node>
 
     <node pkg="racecar_interface" type="visualization_node.py" name="visualization_node" output="$(arg output)">
