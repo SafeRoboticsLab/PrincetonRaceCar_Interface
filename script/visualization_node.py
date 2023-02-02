@@ -32,7 +32,8 @@ class TruckVis:
         marker = PoseStamped()
         marker.header.frame_id = 'map'
         marker.header.stamp = rospy.Time.now()
-        self.origin_pub.publish(marker)
+        if not rospy.is_shutdown():
+            self.origin_pub.publish(marker)
         
     def visualize_playground(self):
         marker = Marker()
@@ -71,8 +72,8 @@ class TruckVis:
         marker.color.g = 0/255.0
         marker.color.b = 0/255.0
         marker.color.a = 1.0
-        
-        self.playground_pub.publish(marker)
+        if not rospy.is_shutdown():
+            self.playground_pub.publish(marker)
         
 
     def visualize_car(self, msg):
@@ -128,8 +129,9 @@ class TruckVis:
         arrow.lifetime = rospy.Duration(0)
         marker_array.markers.append(arrow)
         
-        # publish the marker array
-        self.car_pub.publish(marker_array)
+        if not rospy.is_shutdown():
+            # publish the marker array
+            self.car_pub.publish(marker_array)
 
     
 def main():
