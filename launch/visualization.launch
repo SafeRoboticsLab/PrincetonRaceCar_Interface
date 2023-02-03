@@ -8,6 +8,13 @@
     <arg name="launch_map"     default="true"        doc="launch routing map server"/> 
     <arg name="lane_change_cost" default="1" doc="cost of lane change"/>
     
+
+    <node type="rviz" name="rviz" pkg="rviz" 
+        args="-d $(find racecar_interface)/rviz/truck.rviz" />
+
+    <node type="rqt_gui" name="rqt_gui" pkg="rqt_gui" 
+        args="--perspective-file $(find racecar_interface)/rviz/rqt_truck.perspective"/>
+    
     <node pkg="racecar_interface" type="visualization_node.py" name="visualization_node" output="$(arg output)">
         <param name="odom_topic"           value="$(arg odom_topic)" />
         <param name="control_topic"        value="$(arg control_topic)"/>
@@ -20,11 +27,5 @@
             <arg name="lane_change_cost" value="$(arg lane_change_cost)"/>
         </include>
     </group>
-    
-    <node type="rviz" name="rviz" pkg="rviz" 
-        args="-d $(find racecar_interface)/rviz/truck.rviz" />
-
-    <node type="rqt_gui" name="rqt_gui" pkg="rqt_gui" 
-        args="--perspective-file $(find racecar_interface)/rviz/rqt_truck.perspective"/>
     
 </launch>
