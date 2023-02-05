@@ -1,16 +1,15 @@
 <launch>
     <!-- This fix the library linkage issue in RoboStack -->
     <env name="LD_PRELOAD" value="$(env CONDA_PREFIX)/lib/libyaml-cpp.so" />
-
-    <arg name="output"            default="screen"    doc="display output to screen or log file"/>
-    <arg name="odom_topic"   default="/Simulation/Pose"    doc="ROS topic for the pose"/>
-    <arg name="control_topic"   default="/Control"    doc="ROS topic for control input"/>
-    <arg name="launch_map"     default="false"        doc="launch routing map server"/>
-    <arg name="lane_change_cost" default="1" doc="cost of lane change"/>
-    <arg name="pub_rate"        default="30"            doc="rate at which to publish the pose"/>
-    <arg name="init_x"          default="0"             doc="initial x position"/>
-    <arg name="init_y"          default="0"             doc="initial y position"/>
-    <arg name="init_yaw"        default="0"             doc="initial z position"/>
+    <arg name="output"              default="screen"                doc="display output to screen or log file"/>
+    <arg name="odom_topic"          default="/Simulation/Pose"      doc="ROS topic for the pose"/>
+    <arg name="control_topic"       default="/Control"              doc="ROS topic for control input"/>
+    <arg name="enable_routing"             default="false"                 doc="launch routing map server"/>
+    <arg name="lane_change_cost"    default="1"                     doc="cost of lane change"/>
+    <arg name="pub_rate"            default="30"                    doc="rate at which to publish the pose"/>
+    <arg name="init_x"              default="0"                     doc="initial x position"/>
+    <arg name="init_y"              default="0"                     doc="initial y position"/>
+    <arg name="init_yaw"            default="0"                     doc="initial z position"/>
 
     <node pkg="racecar_interface" type="simulation_node.py" name="simulation_node" output="$(arg output)">
         <param name="odom_topic"           value="$(arg odom_topic)" />
@@ -25,12 +24,16 @@
         <param name="odom_topic"           value="$(arg odom_topic)" />
         <param name="control_topic"        value="$(arg control_topic)"/>
     </node>
+    
+    <include file="$(find racecar_routing)/launch/visualize_map.launch">
+            <arg name="output"              value="$(arg output)"/>
+    </include>
 
-    <group if="$(arg launch_map)">
+    <group if="$(arg enable_routing)">
         <include file="$(find racecar_routing)/launch/routing.launch">
-            <arg name="output" value="$(arg output)"/>
-            <arg name="odom_topic" value="$(arg odom_topic)"/>
-            <arg name="lane_change_cost" value="$(arg lane_change_cost)"/>
+            <arg name="output"              value="$(arg output)"/>
+            <arg name="odom_topic"          value="$(arg odom_topic)"/>
+            <arg name="lane_change_cost"    value="$(arg lane_change_cost)"/>
         </include>
     </group>
 

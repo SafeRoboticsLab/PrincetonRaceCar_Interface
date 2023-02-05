@@ -5,7 +5,7 @@
     <arg name="output"            default="screen"    doc="display output to screen or log file"/>
     <arg name="odom_topic"   default="/SLAM/Pose"    doc="ROS topic for the pose"/>
     <arg name="control_topic"   default="/Control"    doc="ROS topic for control input"/>
-    <arg name="launch_map"     default="true"        doc="launch routing map server"/> 
+    <arg name="enable_routing"     default="false"        doc="launch routing map server"/> 
     <arg name="lane_change_cost" default="1" doc="cost of lane change"/>
     
 
@@ -20,7 +20,11 @@
         <param name="control_topic"        value="$(arg control_topic)"/>
     </node>
 
-    <group if="$(arg launch_map)">
+    <include file="$(find racecar_routing)/launch/visualize_map.launch">
+            <arg name="output" value="$(arg output)"/>
+    </include>
+
+    <group if="$(arg enable_routing)">
         <include file="$(find racecar_routing)/launch/routing.launch">
             <arg name="output" value="$(arg output)"/>
             <arg name="odom_topic" value="$(arg odom_topic)"/>
