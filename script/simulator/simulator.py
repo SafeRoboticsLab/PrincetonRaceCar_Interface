@@ -23,6 +23,7 @@ class Simulator:
         init_yaw = rospy.get_param('~init_yaw', 0)
         
         self.sigma = np.zeros(2)
+        self.update_lock = threading.Lock()
         
         self.current_state = np.array([init_x, init_y, 0, init_yaw])        
         self.dyn = Bicycle4D(1.0/self.pub_rate)
@@ -39,14 +40,18 @@ class Simulator:
         threading.Thread(target=self.simulation_thread).start()
     
     def reset_cb(self, req):
+        self.update_lock.acquire()
         self.current_state = np.array([req.x, req.y, 0, req.yaw])
         rospy.loginfo(f"Simulation Reset to {self.current_state}")
+        self.update_lock.release()
         return True
     
     def reconfigure_callback(self, config, level):
+        self.update_lock.acquire()
         self.sigma[0] = config['throttle_noise_sigma']
         self.sigma[1] = config['steer_noise_sigma']
         rospy.loginfo(f"Simulation Noise Updated to {self.sigma}")
+        self.update_lock.release()
         return config
         
     def control_callback(self, msg):
@@ -57,6 +62,7 @@ class Simulator:
         rate = rospy.Rate(self.pub_rate)
         while not rospy.is_shutdown():
             # read control
+            self.update_lock.acquire()
             control = self.control_buffer.readFromRT()
             if control is not None:
                 self.current_state = self.dyn.integrate(self.current_state, control, self.sigma)
@@ -78,4 +84,5 @@ class Simulator:
             odom_msg.twist.twist.linear.x = self.current_state[2]
             
             self.odom_pub.publish(odom_msg)
+            self.update_lock.release()
             rate.sleep()
