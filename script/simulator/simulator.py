@@ -10,6 +10,8 @@ from dynamic_reconfigure.server import Server
 from racecar_interface.cfg import simConfig
 from racecar_interface.srv import Reset
 from std_srvs.srv import Empty, EmptyResponse
+import queue
+
 
 class Simulator:
     def __init__(self):
@@ -23,6 +25,8 @@ class Simulator:
         init_yaw = rospy.get_param('~init_yaw', 0)
         
         self.sigma = np.zeros(2)
+        self.latency = 0 
+        self.reset_latency = False
         self.update_lock = threading.Lock()
         
         self.current_state = np.array([init_x, init_y, 0, init_yaw])        
@@ -50,7 +54,11 @@ class Simulator:
         self.update_lock.acquire()
         self.sigma[0] = config['throttle_noise_sigma']
         self.sigma[1] = config['steer_noise_sigma']
-        rospy.loginfo(f"Simulation Noise Updated to {self.sigma}")
+        latency_new = config['latency']
+        self.reset_latency = (latency_new != self.latency)
+        self.latency = latency_new
+        
+        rospy.loginfo(f"Simulation Noise Updated to {self.sigma}. Latency Updated to {self.latency} s")
         self.update_lock.release()
         return config
         
@@ -60,6 +68,7 @@ class Simulator:
         
     def simulation_thread(self):
         rate = rospy.Rate(self.pub_rate)
+        msg_queue = queue.Queue()
         while not rospy.is_shutdown():
             # read control
             self.update_lock.acquire()
@@ -83,6 +92,22 @@ class Simulator:
             
             odom_msg.twist.twist.linear.x = self.current_state[2]
             
-            self.odom_pub.publish(odom_msg)
+            if self.reset_latency:
+                print("Clearing Queue")
+                msg_queue.queue.clear()
+                self.reset_latency = False
+                
+            msg_queue.put(odom_msg)
+            t_cur = rospy.Time.now().to_sec()
+            t_queue_top = msg_queue.queue[0].header.stamp.to_sec()
+            dt = t_cur - t_queue_top
+            
+            # simulate latency with delayed publishing
+            if dt >=  self.latency:
+                odom_msg = msg_queue.get()
+                self.odom_pub.publish(odom_msg)
+            
+            # latency.sleep()
+            # self.odom_pub.publish(odom_msg)
             self.update_lock.release()
             rate.sleep()
