@@ -2,7 +2,7 @@
 import rospy
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
-from std_msgs.msg import Float32
+from racecar_msgs.msg import OdometryArray
 from visualization_msgs.msg import Marker, MarkerArray
 
 from tf.transformations import euler_from_quaternion
@@ -13,18 +13,32 @@ import copy
 class TruckVis:
     def __init__(self) -> None:
         odom_topic = rospy.get_param('~odom_topic', '/slam_pose')
-        
+        dyn_obs_topic = rospy.get_param('~dyn_obs_topic', '/Obstacles/Dynamic')
         # setup subscribers
         self.pose_sub = rospy.Subscriber(odom_topic, Odometry, self.odometry_callback, queue_size=1)
+        self.dyn_obs_sub = rospy.Subscriber(dyn_obs_topic, OdometryArray, self.dyn_obs_callback, queue_size=1)
         
         # setup publishers
         self.car_pub = rospy.Publisher('/vis/truck', MarkerArray, queue_size=1)
         self.origin_pub = rospy.Publisher('/vis/origin', PoseStamped, queue_size=1)
         self.playground_pub = rospy.Publisher('/vis/playground', Marker, queue_size=1)
+        self.dyn_obs_pub = rospy.Publisher('/vis/dyn_obs', MarkerArray, queue_size=1)
 
+    def dyn_obs_callback(self, msg):
+        color = [204/255.0, 51/255.0, 0/255.0,  0.5]
+        msg_to_pub = MarkerArray()
+        for i, obs in enumerate(msg.odom_list):
+            self.visualize_car(obs, 'obs', i, color, msg_to_pub)
+        self.dyn_obs_pub.publish(msg_to_pub)
+        
         
     def odometry_callback(self, msg):
-        self.visualize_car(msg)
+        
+        color = [255/255.0, 165/255.0, 15/255.0,  0.5]
+        msg_to_pub = MarkerArray()
+        self.visualize_car(msg, 'ego', 0, color, msg_to_pub)
+        self.car_pub.publish(msg_to_pub)
+        
         self.visualize_origin()
         self.visualize_playground()
         
@@ -76,14 +90,12 @@ class TruckVis:
             self.playground_pub.publish(marker)
         
 
-    def visualize_car(self, msg):
-        marker_array = MarkerArray()
-        
+    def visualize_car(self, msg, ns, id, color, marker_array):        
         # Create the vehicle marker
         cubiod = Marker()
         cubiod.header = msg.header
-        cubiod.ns = 'truck'
-        cubiod.id = 0
+        cubiod.ns = ns
+        cubiod.id = id
         cubiod.type = 1 # CUBE
         cubiod.action = 0 # ADD/modify
         cubiod.scale.x = 0.42
@@ -101,9 +113,9 @@ class TruckVis:
         cubiod.pose.position.z = 0 
         
         # ORANGE
-        cubiod.color.r = 255/255.0
-        cubiod.color.g = 165/255.0
-        cubiod.color.b = 15/255.0
+        cubiod.color.r = color[0]
+        cubiod.color.g = color[1]
+        cubiod.color.b = color[2]
         cubiod.color.a = 0.5
         cubiod.lifetime = rospy.Duration(0)
         marker_array.markers.append(cubiod)
@@ -111,8 +123,8 @@ class TruckVis:
         # Create the arrow marker
         arrow = Marker()
         arrow.header = msg.header
-        arrow.ns =  'truck'
-        arrow.id = 1
+        arrow.ns =  ns+"arrow"
+        arrow.id = id
         arrow.type = 0 # ARROW
         arrow.action = 0 # ADD/modify
         arrow.pose = copy.deepcopy(msg.pose.pose)
@@ -129,9 +141,6 @@ class TruckVis:
         arrow.lifetime = rospy.Duration(0)
         marker_array.markers.append(arrow)
         
-        if not rospy.is_shutdown():
-            # publish the marker array
-            self.car_pub.publish(marker_array)
 
     
 def main():

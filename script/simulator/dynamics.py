@@ -38,3 +38,34 @@ class Bicycle4D:
         new_state = state + self.dt / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
         new_state[3] = np.mod(new_state[3]+np.pi, 2 * np.pi) - np.pi
         return np.clip(new_state, self.state_limits[:, 0], self.state_limits[:, 1])
+    
+class DoubleIntegrator:
+    def __init__(self, dt) -> None:
+        # State: [x, v_x, y, v_y]
+        # Control: [a_x, a_y]
+        self.dt = dt
+        self.control_limit = np.array([[-5, 5], [-3, 3]])
+        self.state_limits = np.array([[-np.inf, np.inf],
+                                        [0, 3],
+                                        [-np.inf, np.inf]])
+        
+        self.A = np.array([[1, self.dt, 0, 0],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, self.dt],
+                            [0, 0, 0, 1]])
+        
+        self.B = np.array([[0, 0],
+                            [self.dt, 0],
+                            [0, 0],
+                            [0, self.dt]])
+        
+    def integrate(self, state, control, noise_sigma):
+        '''
+        integrate the continuous time dynamics of the double integrator model
+        '''
+        control = np.clip(control, self.control_limit[:, 0], self.control_limit[:, 1])
+        new_state = self.A @ state + self.B @ (control + np.random.randn(2)*noise_sigma)
+        return np.clip(new_state, self.state_limits[:, 0], self.state_limits[:, 1])
+        
+        
+        
