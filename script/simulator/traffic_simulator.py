@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 from .dynamics import Bicycle4D
 from .ref_path import RefPath
-
+from .ros_utility import get_ros_param
 from nav_msgs.msg import Odometry
 from visualization_msgs.msg import MarkerArray, Marker
 from racecar_msgs.msg import OdometryArray
@@ -33,17 +33,17 @@ class TrafficSimulator:
         self.dyn_server = Server(simConfig, self.reconfigure_callback)
         
         self.setup_publisher()
-                
+
         threading.Thread(target=self.simulation_thread).start()
         
     def read_parameters(self):
         # read parameters
-        self.num_dyn_obj = rospy.get_param('~num_dyn_obj', 1)
-        self.num_static_obj = rospy.get_param('~num_static_obs', 1)
-        self.static_obs_size = rospy.get_param('~static_obs_size', 0.2)
-        self.static_obs_topic = rospy.get_param('~static_obs_topic', '/Obstacles/Static')
-        self.dyn_obs_topic = rospy.get_param('~dyn_obs_topic', '/Obstacles/Dynamic')
-        self.pub_rate = rospy.get_param('~pub_rate', 30)
+        self.num_dyn_obj = get_ros_param('~num_dyn_obs', 1)
+        self.num_static_obj = get_ros_param('~num_static_obs', 1)
+        self.static_obs_size = get_ros_param('~static_obs_size', 0.2)
+        self.static_obs_topic = get_ros_param('~static_obs_topic', '/Obstacles/Static')
+        self.dyn_obs_topic = get_ros_param('~dyn_obs_topic', '/Obstacles/Dynamic')
+        self.pub_rate = get_ros_param('~pub_rate', 30)
     
     def setup_publisher(self):
         self.static_obs_publisher = rospy.Publisher(self.static_obs_topic, MarkerArray, queue_size=1)
@@ -169,7 +169,7 @@ class TrafficSimulator:
         static_obs_msg = MarkerArray()
         for i in range(self.num_static_obj):
             # randomly sample a pose
-            x, y, _ = self.lanelet_map.get_random_waypoint()
+            x, y, _ = self.lanelet_map.get_random_waypoint(with_neighbors=True)
             psi = np.random.uniform(-np.pi, np.pi) # random heading
             
             marker = Marker()   

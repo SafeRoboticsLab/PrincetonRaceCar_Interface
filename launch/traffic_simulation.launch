@@ -10,9 +10,9 @@
     <arg name="init_x"              default="0"                     doc="initial x position"/>
     <arg name="init_y"              default="0"                     doc="initial y position"/>
     <arg name="init_yaw"            default="0"                     doc="initial z position"/>
-    <arg name="num_dyn_obj"         default="1"                     doc="number of dynamic objects"/>
-    <arg name="num_static_obj"      default="1"                     doc="number of static objects"/>
-    <arg name="static_obs_size"     default="0.2"                   doc="type of static objects"/>
+    <arg name="num_dyn_obs"         default="1"                     doc="number of dynamic obsects"/>
+    <arg name="num_static_obs"      default="8"                     doc="number of static obsects"/>
+    <arg name="static_obs_size"     default="0.2"                   doc="type of static obsects"/>
     <arg name="static_obs_topic"    default="/Obstacles/Static"     doc="ROS topic for static obstacles"/>
     <arg name="dyn_obs_topic"       default="/Obstacles/Dynamic"    doc="ROS topic for dynamic obstacles"/>
     
@@ -29,8 +29,8 @@
 
     <node pkg="racecar_interface" type="traffic_simulation_node.py" name="traffic_simulation_node" output="$(arg output)">
         <param name="map_file"             value="$(find racecar_routing)/cfg/track.pkl" />
-        <param name="num_dyn_obj"          value="$(arg num_dyn_obj)" />
-        <param name="num_static_obj"       value="$(arg num_static_obj)" />
+        <param name="num_dyn_obs"          value="$(arg num_dyn_obs)" />
+        <param name="num_static_obs"       value="$(arg num_static_obs)" />
         <param name="static_obs_size"      value="$(arg static_obs_size)" />
         <param name="static_obs_topic"     value="$(arg static_obs_topic)" />
         <param name="dyn_obs_topic"        value="$(arg dyn_obs_topic)" />
