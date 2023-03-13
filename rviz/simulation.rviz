@@ -3,10 +3,7 @@ Panels:
     Help Height: 138
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /Previous Pose1/Shape1
-        - /Planned Trajectory1
-        - /Static Obstacles1
+      Expanded: ~
       Splitter Ratio: 0.4363957643508911
     Tree Height: 1086
   - Class: rviz/Selection
@@ -52,14 +49,69 @@ Visualization Manager:
       Plane Cell Count: 20
       Reference Frame: <Fixed Frame>
       Value: false
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /vis/playground
+      Name: PlayGround
+      Namespaces:
+        playground: true
+      Queue Size: 100
+      Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /vis/truck
-      Name: Truck
+      Marker Topic: /Routing/Map
+      Name: Map
       Namespaces:
-        ego: true
-        egoarrow: true
+        lanelet: true
       Queue Size: 100
+      Value: true
+    - Alpha: 0.5
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 0; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.009999999776482582
+      Name: Planned Trajectory
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /Planning/Trajectory
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 170; 0; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.019999999552965164
+      Name: Reference Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /Routing/Path
+      Unreliable: false
       Value: true
     - Angle Tolerance: 0.10000000149011612
       Class: rviz/Odometry
@@ -96,61 +148,14 @@ Visualization Manager:
       Topic: /Simulation/Pose
       Unreliable: false
       Value: true
-    - Alpha: 0.5
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 0; 255; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 0.009999999776482582
-      Name: Planned Trajectory
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Queue Size: 10
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /Planning/Trajectory
-      Unreliable: false
-      Value: true
     - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /Routing/Map
-      Name: Map
+      Marker Topic: /vis/truck
+      Name: Truck
       Namespaces:
-        lanelet: true
+        ego: true
+        egoarrow: true
       Queue Size: 100
-      Value: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 170; 0; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 0.029999999329447746
-      Name: Reference Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: None
-      Queue Size: 10
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /Routing/Path
-      Unreliable: false
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -183,14 +188,6 @@ Visualization Manager:
       Shape: Axes
       Topic: /vis/origin
       Unreliable: false
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /vis/playground
-      Name: PlayGround
-      Namespaces:
-        playground: true
-      Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
       Enabled: true
