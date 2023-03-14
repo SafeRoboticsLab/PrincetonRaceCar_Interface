@@ -8,10 +8,10 @@ from nav_msgs.msg import Odometry
 from visualization_msgs.msg import MarkerArray, Marker
 from racecar_msgs.msg import OdometryArray
 from tf.transformations import quaternion_about_axis
-
 import threading
 from dynamic_reconfigure.server import Server
 from racecar_interface.cfg import simConfig
+from racecar_interface.srv import ResetObstacle
 import queue
 
 
@@ -31,10 +31,20 @@ class TrafficSimulator:
         self.dyn = Bicycle4D(1.0/self.pub_rate)
         
         self.dyn_server = Server(simConfig, self.reconfigure_callback)
+        self.reset_srv = rospy.Service('/simulation/reset_static_obstacle', ResetObstacle, self.reset_cb)
+        self.static_obs_msg = self.create_static_obs()
         
         self.setup_publisher()
 
         threading.Thread(target=self.simulation_thread).start()
+
+    def reset_cb(self, req):
+        self.update_lock.acquire()
+        self.num_static_obj = req.n
+        self.static_obs_msg = self.create_static_obs()
+        rospy.loginfo(f"Static Obstacle Reset")
+        self.update_lock.release()
+        return True
         
     def read_parameters(self):
         # read parameters
@@ -64,9 +74,7 @@ class TrafficSimulator:
         return config
         
     def simulation_thread(self):
-        
-        static_obs_msg = self.create_static_obs()
-        
+        print("enter simulation thread")
         dyn_obs_pose = {}
         for i in range(self.num_dyn_obj):
             pose= self.lanelet_map.get_random_waypoint()
@@ -79,7 +87,6 @@ class TrafficSimulator:
         msg_queue = queue.Queue()
         
         while not rospy.is_shutdown():
-            self.update_lock.acquire()
             header = rospy.Header(frame_id = 'map')
             odom_array_msg = OdometryArray()
             odom_array_msg.header = header
@@ -143,15 +150,16 @@ class TrafficSimulator:
             # simulate latency with delayed publishing
             if dt >=  self.latency:
                 dyn_msg_to_pub = msg_queue.get()
-                static_msg_to_pub = static_obs_msg
-                
+                self.update_lock.acquire()
+                static_msg_to_pub = self.static_obs_msg
                 for obs in static_msg_to_pub.markers:
                     obs.header = dyn_msg_to_pub.header
 
                 self.static_obs_publisher.publish(static_msg_to_pub)
+                self.update_lock.release()
+
                 self.dyn_obs_publisher.publish(dyn_msg_to_pub)
                 
-            self.update_lock.release()
             rate.sleep()
             
     def gen_ref_path(self, pose):
@@ -165,6 +173,7 @@ class TrafficSimulator:
         
             
     def create_static_obs(self):
+        print(f"create {self.num_static_obj} static obstacles")
         # Setup static obstacles
         static_obs_msg = MarkerArray()
         for i in range(self.num_static_obj):

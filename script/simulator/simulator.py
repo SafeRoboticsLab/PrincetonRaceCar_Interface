@@ -9,7 +9,6 @@ import threading
 from dynamic_reconfigure.server import Server
 from racecar_interface.cfg import simConfig
 from racecar_interface.srv import Reset
-from std_srvs.srv import Empty, EmptyResponse
 import queue
 
 

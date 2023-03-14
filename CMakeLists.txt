@@ -45,7 +45,7 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-add_service_files(DIRECTORY srv FILES Reset.srv)
+add_service_files(DIRECTORY srv FILES Reset.srv ResetObstacle.srv)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
