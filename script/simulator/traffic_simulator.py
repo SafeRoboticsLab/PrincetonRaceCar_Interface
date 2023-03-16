@@ -87,7 +87,7 @@ class TrafficSimulator:
         msg_queue = queue.Queue()
         
         while not rospy.is_shutdown():
-            header = rospy.Header(frame_id = 'map')
+            header = rospy.Header(frame_id = 'map', stamp=rospy.Time.now())
             odom_array_msg = OdometryArray()
             odom_array_msg.header = header
             
@@ -168,7 +168,7 @@ class TrafficSimulator:
         while path is None:
             goal = self.lanelet_map.get_random_waypoint()
             path = self.lanelet_map.get_shortest_path(pose, goal, True, True, verbose=False)
-        v_ref = np.random.uniform(0.5, 2.0) 
+        v_ref = np.random.uniform(0, 1.0) 
         return RefPath(path[:,:2].T), v_ref
         
             
