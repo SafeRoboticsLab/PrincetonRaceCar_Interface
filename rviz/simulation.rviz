@@ -194,7 +194,7 @@ Visualization Manager:
       Marker Topic: /Obstacles/Static
       Name: Static Obstacles
       Namespaces:
-        static_obs: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -204,6 +204,15 @@ Visualization Manager:
       Namespaces:
         obs: true
         obsarrow: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /vis/FRS
+      Name: FRS
+      Namespaces:
+        frs_0: true
+        frs_1: true
       Queue Size: 100
       Value: true
   Enabled: true

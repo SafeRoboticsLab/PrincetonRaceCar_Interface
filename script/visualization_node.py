@@ -31,7 +31,6 @@ class TruckVis:
             self.visualize_car(obs, 'obs', i, color, msg_to_pub)
         self.dyn_obs_pub.publish(msg_to_pub)
         
-        
     def odometry_callback(self, msg):
         
         color = [255/255.0, 165/255.0, 15/255.0,  0.5]
@@ -89,7 +88,6 @@ class TruckVis:
         if not rospy.is_shutdown():
             self.playground_pub.publish(marker)
         
-
     def visualize_car(self, msg, ns, id, color, marker_array):        
         # Create the vehicle marker
         cubiod = Marker()
@@ -141,7 +139,6 @@ class TruckVis:
         arrow.lifetime = rospy.Duration(0)
         marker_array.markers.append(arrow)
         
-
     
 def main():
     rospy.init_node('visualization_node')

@@ -207,6 +207,8 @@ class TrafficSimulator:
             marker.color.b = 153/255.0
             marker.color.a = 0.8
             
+            marker.lifetime = rospy.Duration(1.5/self.pub_rate)
+            
             static_obs_msg.markers.append(marker)
         return static_obs_msg
         
