@@ -108,7 +108,7 @@ class TrafficSimulator:
                 
                 # calculate control
                 # look ahead 1 second
-                look_ahead, _ = ref_path.interp(s*ref_path.length + state[2]*0.5)
+                look_ahead, _ = ref_path.interp(s*ref_path.length + 0.5)
                 look_ahead_x = look_ahead[0,0]
                 look_ahead_y = look_ahead[1,0]
                 
