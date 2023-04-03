@@ -32,7 +32,7 @@ class TrafficSimulator:
         
         self.dyn_server = Server(simConfig, self.reconfigure_callback)
         self.reset_srv = rospy.Service('/simulation/reset_static_obstacle', ResetObstacle, self.reset_cb)
-        self.static_obs_msg = self.create_static_obs()
+        
         
         self.setup_publisher()
 
@@ -54,7 +54,12 @@ class TrafficSimulator:
         self.static_obs_topic = get_ros_param('~static_obs_topic', '/Obstacles/Static')
         self.dyn_obs_topic = get_ros_param('~dyn_obs_topic', '/Obstacles/Dynamic')
         self.pub_rate = get_ros_param('~pub_rate', 30)
-    
+        self.static_obs_location = get_ros_param('~static_obs_location', None)
+        if self.static_obs_location is not None:
+            self.static_obs_msg = self.load_static_obs(self.static_obs_location)
+        else:
+            self.static_obs_msg = self.create_static_obs()
+            
     def setup_publisher(self):
         self.static_obs_publisher = rospy.Publisher(self.static_obs_topic, MarkerArray, queue_size=1)
         self.dyn_obs_publisher = rospy.Publisher(self.dyn_obs_topic, OdometryArray, queue_size=1)
@@ -170,6 +175,45 @@ class TrafficSimulator:
             path = self.lanelet_map.get_shortest_path(pose, goal, True, True, verbose=False)
         v_ref = np.random.uniform(0, 1.0) 
         return RefPath(path[:,:2].T), v_ref
+    
+    def load_static_obs(self, locations):
+        # Setup static obstacles
+        static_obs_msg = MarkerArray()
+        for i, xy in enumerate(locations):
+            # randomly sample a pose
+            psi = np.random.uniform(-np.pi, np.pi) # random heading
+            
+            marker = Marker()   
+            marker.ns = 'static_obs'
+            marker.id = i
+            marker.type = 1 # cube
+            marker.action = 0 # add
+            
+            # pose of the marker
+            marker.pose.position.x = xy[0]
+            marker.pose.position.y = xy[1]
+            marker.pose.position.z = self.static_obs_size/2.0
+            
+            q = quaternion_about_axis(psi, (0,0,1))
+            marker.pose.orientation.x = q[0]
+            marker.pose.orientation.y = q[1]
+            marker.pose.orientation.z = q[2]
+            marker.pose.orientation.w = q[3]
+            
+            marker.scale.x = self.static_obs_size
+            marker.scale.y = self.static_obs_size
+            marker.scale.z = self.static_obs_size
+            
+            marker.color.r = 0
+            marker.color.g = 0
+            marker.color.b = 153/255.0
+            marker.color.a = 0.8
+            
+            marker.lifetime = rospy.Duration(1.5/self.pub_rate)
+            
+            static_obs_msg.markers.append(marker)
+        return static_obs_msg
+    
         
             
     def create_static_obs(self):
