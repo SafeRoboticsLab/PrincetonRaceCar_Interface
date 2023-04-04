@@ -17,11 +17,12 @@ import queue
 
 class TrafficSimulator:
     def __init__(self, map_file):
-        self.read_parameters()
+        
         with open(map_file, 'rb') as f:
             self.lanelet_map = pickle.load(f)
         self.lanelet_map.build_graph(0.5)
         
+        self.read_parameters()
         self.sigma = np.zeros(2)
         self.K = np.ones(2)
         self.latency = 0 

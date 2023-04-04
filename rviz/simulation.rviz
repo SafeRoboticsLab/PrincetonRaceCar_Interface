@@ -3,7 +3,8 @@ Panels:
     Help Height: 138
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Marker1
       Splitter Ratio: 0.4363957643508911
     Tree Height: 1086
   - Class: rviz/Selection
@@ -202,8 +203,7 @@ Visualization Manager:
       Marker Topic: /vis/dyn_obs
       Name: Dyanmic Obstacle
       Namespaces:
-        obs: true
-        obsarrow: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -211,8 +211,15 @@ Visualization Manager:
       Marker Topic: /vis/FRS
       Name: FRS
       Namespaces:
-        frs_0: true
-        frs_1: true
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /vis/time_remain
+      Name: Marker
+      Namespaces:
+        time: true
       Queue Size: 100
       Value: true
   Enabled: true
