@@ -34,7 +34,6 @@ class TrafficSimulator:
         self.dyn_server = Server(simConfig, self.reconfigure_callback)
         self.reset_srv = rospy.Service('/simulation/reset_static_obstacle', ResetObstacle, self.reset_cb)
         
-        
         self.setup_publisher()
 
         threading.Thread(target=self.simulation_thread).start()
