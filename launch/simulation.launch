@@ -30,12 +30,12 @@
     </include>
 
     <!-- <group if="$(arg enable_routing)"> -->
-        <include file="$(find racecar_routing)/launch/routing.launch">
-            <arg name="output"              value="$(arg output)"/>
-            <arg name="odom_topic"          value="$(arg odom_topic)"/>
-            <arg name="lane_change_cost"    value="$(arg lane_change_cost)"/>
-            <arg name="click_goal"          value="$(arg enable_routing)"/>
-        </include>
+    <include file="$(find racecar_routing)/launch/routing.launch">
+        <arg name="output"              value="$(arg output)"/>
+        <arg name="odom_topic"          value="$(arg odom_topic)"/>
+        <arg name="lane_change_cost"    value="$(arg lane_change_cost)"/>
+        <arg name="click_goal"          value="$(arg enable_routing)"/>
+    </include>
     <!-- </group> -->
 
     <node type="rviz" name="rviz" pkg="rviz" 
