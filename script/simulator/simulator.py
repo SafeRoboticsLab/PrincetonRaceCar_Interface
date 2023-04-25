@@ -22,6 +22,7 @@ class Simulator:
         init_x= rospy.get_param('~init_x', 0)
         init_y = rospy.get_param('~init_y', 0)
         init_yaw = rospy.get_param('~init_yaw', 0)
+        serice_name = rospy.get_param('~serice_name', '/simulation/reset')
         
         self.sigma = np.zeros(2)
         self.latency = 0 
@@ -38,8 +39,8 @@ class Simulator:
         
         self.dyn_server = Server(simConfig, self.reconfigure_callback)
         
-        self.reset_srv = rospy.Service('/simulation/reset', Reset, self.reset_cb)
-        
+        self.reset_srv = rospy.Service(serice_name, Reset, self.reset_cb)
+    
         threading.Thread(target=self.simulation_thread).start()
     
     def reset_cb(self, req):
