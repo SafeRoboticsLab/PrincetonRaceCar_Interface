@@ -1,0 +1,5 @@
+racecar_interface:
+  ros__parameters:
+    throttle_noise_sigma: 0.0  # Default value, range [0, 5]
+    steer_noise_sigma: 0.0  # Default value, range [0, 5]
+    latency: 0.0  # Default value, range [0, 1]
