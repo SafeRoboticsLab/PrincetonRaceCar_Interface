@@ -21,30 +21,38 @@ class TruckVis(Node):
         # Declare parameters
         self.declare_parameter("odom_topic", "/slam_pose")
         self.declare_parameter("dyn_obs_topic", "/Obstacles/Dynamic")
+        self.declare_parameter("car_marker_topic", "/vis/truck")
+        self.declare_parameter("origin_marker_topic", "/vis/origin")
+        self.declare_parameter("playground_marker_topic", "/vis/playground")
+        self.declare_parameter("dyn_obs_marker_topic", "/vis/dyn_obs")
 
         # Get parameter values
         odom_topic = self.get_parameter("odom_topic").value
         dyn_obs_topic = self.get_parameter("dyn_obs_topic").value
+        car_marker_topic = self.get_parameter("car_marker_topic").value
+        origin_marker_topic = self.get_parameter("origin_marker_topic").value
+        playground_marker_topic = self.get_parameter("playground_marker_topic").value
+        dyn_obs_marker_topic = self.get_parameter("dyn_obs_marker_topic").value
 
         # Setup subscribers
         self.pose_sub = self.create_subscription(Odometry, odom_topic, self.odometry_callback, 1)
         self.dyn_obs_sub = self.create_subscription(OdometryArray, dyn_obs_topic, self.dyn_obs_callback, 1)
 
         # Setup publishers
-        self.car_pub = self.create_publisher(MarkerArray, "/vis/truck", 1)
-        self.origin_pub = self.create_publisher(PoseStamped, "/vis/origin", 1)
-        self.playground_pub = self.create_publisher(Marker, "/vis/playground", 1)
-        self.dyn_obs_pub = self.create_publisher(MarkerArray, "/vis/dyn_obs", 1)
+        self.car_pub = self.create_publisher(MarkerArray, car_marker_topic, 1)
+        self.origin_pub = self.create_publisher(PoseStamped, origin_marker_topic, 1)
+        self.playground_pub = self.create_publisher(Marker, playground_marker_topic, 1)
+        self.dyn_obs_pub = self.create_publisher(MarkerArray, dyn_obs_marker_topic, 1)
 
     def dyn_obs_callback(self, msg):
-        color = [204/255.0, 51/255.0, 0/255.0, 0.5]
+        color = [204 / 255.0, 51 / 255.0, 0 / 255.0, 0.5]
         msg_to_pub = MarkerArray()
         for i, obs in enumerate(msg.odom_list):
             self.visualize_car(obs, 'obs', i, color, msg_to_pub)
         self.dyn_obs_pub.publish(msg_to_pub)
 
     def odometry_callback(self, msg):
-        color = [255/255.0, 165/255.0, 15/255.0, 0.5]
+        color = [255 / 255.0, 165 / 255.0, 15 / 255.0, 0.5]
         msg_to_pub = MarkerArray()
         self.visualize_car(msg, 'ego', 0, color, msg_to_pub)
         self.car_pub.publish(msg_to_pub)
