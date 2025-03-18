@@ -9,7 +9,7 @@ from tf_transformations import euler_from_quaternion
 import numpy as np
 import copy
 
-class TruckVis(Node):
+class Visualization(Node):
     """
     ROS 2 node that visualizes the truck, dynamic obstacles, and environment.
     """
@@ -137,7 +137,7 @@ class TruckVis(Node):
 
 def main():
     rclpy.init()
-    node = TruckVis()
+    node = Visualization()
 
     try:
         rclpy.spin(node)
