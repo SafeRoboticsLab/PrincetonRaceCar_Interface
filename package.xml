@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>racecar_interface</name>
   <version>0.1.0</version>
   <description>The interface package for Princeton Race Car</description>
@@ -7,17 +7,25 @@
   <maintainer email="zixuz@princeton.edu">Zixu Zhang</maintainer>
   <license>BSD</license>
 
-  <author >Zixu Zhang</author>
+  <author>Zixu Zhang</author>
 
+  <!-- Updated build system -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
-
-  <depend>rospy</depend>
+  <!-- Updated ROS 2 dependencies -->
+  <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>racecar_msgs</depend>
-  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
   <depend>dynamic_reconfigure</depend>
-  <build_depend>message_generation</build_depend>
-  <exec_depend>message_runtime</exec_depend>
 
+  <!-- Message generation dependencies in ROS 2 -->
+  <depend>rosidl_default_generators</depend>
+  <depend>rosidl_default_runtime</depend>
+
+  <!-- Export build type for ament -->
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
