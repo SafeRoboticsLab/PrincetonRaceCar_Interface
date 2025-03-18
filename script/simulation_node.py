@@ -8,7 +8,18 @@ class SimulationNode(Node):
     ROS 2 node that initializes and runs the Simulator.
     """
     def __init__(self):
-        super().__init__('simulation_node')  # Initializes the node in ROS 2
+        super().__init__('simulation_node')
+
+        # Declare parameters from YAML
+        self.declare_parameter("throttle_noise_sigma", 0.0)
+        self.declare_parameter("steer_noise_sigma", 0.0)
+        self.declare_parameter("latency", 0.0)
+
+        # Get parameter values
+        self.throttle_noise_sigma = self.get_parameter("throttle_noise_sigma").value
+        self.steer_noise_sigma = self.get_parameter("steer_noise_sigma").value
+        self.latency = self.get_parameter("latency").value
+
         self.get_logger().info("Simulation node started")
 
         # Initialize the Simulator
