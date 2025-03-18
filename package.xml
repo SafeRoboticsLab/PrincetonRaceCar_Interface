@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="3">
+<package format="3">  <!-- Updated package format from 2 to 3 for better dependency handling in ROS 2 -->
   <name>racecar_interface</name>
   <version>0.1.0</version>
   <description>The interface package for Princeton Race Car</description>
@@ -9,22 +9,26 @@
 
   <author>Zixu Zhang</author>
 
-  <!-- Updated build system -->
+  <!-- Changed build tool from catkin to ament_cmake, required for ROS 2 -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- Updated ROS 2 dependencies -->
-  <depend>rclpy</depend>
+  <!-- Updated dependencies for ROS 2 -->
+  <depend>rclpy</depend>  <!-- Replaced rospy (ROS 1) with rclpy (ROS 2) for Python compatibility -->
   <depend>std_msgs</depend>
   <depend>racecar_msgs</depend>
-  <depend>tf2_ros</depend>
-  <depend>tf2_geometry_msgs</depend>
+
+  <!-- Updated tf2 dependencies -->
+  <depend>tf2_ros</depend>  <!-- tf2 in ROS 1 is split into multiple packages in ROS 2 -->
+  <depend>tf2_geometry_msgs</depend>  <!-- Required for handling geometric transforms in ROS 2 -->
+
+  <!-- Dynamic reconfigure is handled differently in ROS 2, but keeping for now -->
   <depend>dynamic_reconfigure</depend>
 
-  <!-- Message generation dependencies in ROS 2 -->
-  <depend>rosidl_default_generators</depend>
-  <depend>rosidl_default_runtime</depend>
+  <!-- Updated message generation dependencies -->
+  <depend>rosidl_default_generators</depend>  <!-- Used instead of message_generation in ROS 2 -->
+  <depend>rosidl_default_runtime</depend>  <!-- Replaces message_runtime for runtime message support -->
 
-  <!-- Export build type for ament -->
+  <!-- Export build type to specify ament_cmake for ROS 2 -->
   <export>
     <build_type>ament_cmake</build_type>
   </export>
