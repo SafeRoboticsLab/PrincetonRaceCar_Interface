@@ -1,47 +1,94 @@
-<launch>
-    <!-- This fix the library linkage issue in RoboStack -->
-    <env name="LD_PRELOAD" value="$(env CONDA_PREFIX)/lib/libyaml-cpp.so" />
-    <arg name="output"              default="screen"                doc="display output to screen or log file"/>
-    <arg name="odom_topic"          default="/Simulation/Pose"      doc="ROS topic for the pose"/>
-    <arg name="control_topic"       default="/Control"              doc="ROS topic for control input"/>
-    <arg name="enable_routing"      default="false"                 doc="click and generate the route"/>
-    <arg name="lane_change_cost"    default="1"                     doc="cost of lane change"/>
-    <arg name="pub_rate"            default="30"                    doc="rate at which to publish the pose"/>
-    <arg name="init_x"              default="0"                     doc="initial x position"/>
-    <arg name="init_y"              default="0"                     doc="initial y position"/>
-    <arg name="init_yaw"            default="0"                     doc="initial z position"/>
+import os
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
+from launch.conditions import IfCondition
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 
-    <node pkg="racecar_interface" type="simulation_node.py" name="simulation_node" output="$(arg output)">
-        <param name="odom_topic"           value="$(arg odom_topic)" />
-        <param name="control_topic"        value="$(arg control_topic)" />
-        <param name="pub_rate"             value="$(arg pub_rate)" />
-        <param name="init_x"               value="$(arg init_x)" />
-        <param name="init_y"               value="$(arg init_y)" />
-        <param name="init_yaw"             value="$(arg init_yaw)" />
-    </node>
+def generate_launch_description():
+    # Fix for RoboStack library linkage issue
+    ld_preload = SetEnvironmentVariable(name="LD_PRELOAD", value=os.path.join(os.environ.get("CONDA_PREFIX", ""), "lib/libyaml-cpp.so"))
 
-    <node pkg="racecar_interface" type="visualization_node.py" name="visualization_node" output="$(arg output)">
-        <param name="odom_topic"           value="$(arg odom_topic)" />
-        <param name="control_topic"        value="$(arg control_topic)"/>
-    </node>
-    
-    <include file="$(find racecar_routing)/launch/visualize_map.launch">
-            <arg name="output"              value="$(arg output)"/>
-    </include>
+    # Declare launch arguments (replacing <arg> from ROS 1)
+    output_arg = DeclareLaunchArgument("output", default_value="screen", description="Display output to screen or log file")
+    odom_topic_arg = DeclareLaunchArgument("odom_topic", default_value="/Simulation/Pose", description="ROS topic for the pose")
+    control_topic_arg = DeclareLaunchArgument("control_topic", default_value="/Control", description="ROS topic for control input")
+    enable_routing_arg = DeclareLaunchArgument("enable_routing", default_value="false", description="Enable route generation")
+    lane_change_cost_arg = DeclareLaunchArgument("lane_change_cost", default_value="1", description="Cost of lane change")
+    pub_rate_arg = DeclareLaunchArgument("pub_rate", default_value="30", description="Rate at which to publish the pose")
+    init_x_arg = DeclareLaunchArgument("init_x", default_value="0", description="Initial x position")
+    init_y_arg = DeclareLaunchArgument("init_y", default_value="0", description="Initial y position")
+    init_yaw_arg = DeclareLaunchArgument("init_yaw", default_value="0", description="Initial yaw")
 
-    <!-- <group if="$(arg enable_routing)"> -->
-    <include file="$(find racecar_routing)/launch/routing.launch">
-        <arg name="output"              value="$(arg output)"/>
-        <arg name="odom_topic"          value="$(arg odom_topic)"/>
-        <arg name="lane_change_cost"    value="$(arg lane_change_cost)"/>
-        <arg name="click_goal"          value="$(arg enable_routing)"/>
-    </include>
-    <!-- </group> -->
+    # Simulation Node
+    simulation_node = Node(
+        package="racecar_interface",
+        executable="simulation_node",
+        name="simulation_node",
+        output=LaunchConfiguration("output"),
+        parameters=[{
+            "odom_topic": LaunchConfiguration("odom_topic"),
+            "control_topic": LaunchConfiguration("control_topic"),
+            "pub_rate": LaunchConfiguration("pub_rate"),
+            "init_x": LaunchConfiguration("init_x"),
+            "init_y": LaunchConfiguration("init_y"),
+            "init_yaw": LaunchConfiguration("init_yaw"),
+        }]
+    )
 
-    <node type="rviz" name="rviz" pkg="rviz" 
-        args="-d $(find racecar_interface)/rviz/simulation.rviz" />
-    
-    <node type="rqt_gui" name="rqt_gui" pkg="rqt_gui" 
-        args="--perspective-file $(find racecar_interface)/rviz/rqt_sim.perspective"/>
-    
-</launch>
+    # Visualization Node
+    visualization_node = Node(
+        package="racecar_interface",
+        executable="visualization_node",
+        name="visualization_node",
+        output=LaunchConfiguration("output"),
+        parameters=[{
+            "odom_topic": LaunchConfiguration("odom_topic"),
+            "control_topic": LaunchConfiguration("control_topic"),
+        }]
+    )
+
+    # Include other launch files
+    visualize_map_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(
+            os.environ["ROS_PACKAGE_PATH"], "racecar_routing", "launch", "visualize_map.launch.py"
+        )),
+        launch_arguments={"output": LaunchConfiguration("output")}.items(),
+    )
+
+    routing_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(
+            os.environ["ROS_PACKAGE_PATH"], "racecar_routing", "launch", "routing.launch.py"
+        )),
+        launch_arguments={
+            "output": LaunchConfiguration("output"),
+            "odom_topic": LaunchConfiguration("odom_topic"),
+            "lane_change_cost": LaunchConfiguration("lane_change_cost"),
+            "click_goal": LaunchConfiguration("enable_routing"),
+        }.items(),
+        condition=IfCondition(LaunchConfiguration("enable_routing"))  # Conditional execution
+    )
+
+    # RViz2 Node
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz",
+        arguments=["-d", os.path.join(os.environ["ROS_PACKAGE_PATH"], "racecar_interface", "rviz", "simulation.rviz")]
+    )
+
+    # RQT GUI Node
+    rqt_gui_node = Node(
+        package="rqt_gui",
+        executable="rqt_gui",
+        name="rqt_gui",
+        arguments=["--perspective-file", os.path.join(os.environ["ROS_PACKAGE_PATH"], "racecar_interface", "rviz", "rqt_sim.perspective")]
+    )
+
+    return LaunchDescription([
+        ld_preload,
+        output_arg, odom_topic_arg, control_topic_arg, enable_routing_arg, lane_change_cost_arg,
+        pub_rate_arg, init_x_arg, init_y_arg, init_yaw_arg,
+        simulation_node, visualization_node, visualize_map_launch, routing_launch, rviz_node, rqt_gui_node
+    ])
