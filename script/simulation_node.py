@@ -1,61 +1,30 @@
 #!/usr/bin/env python3
-import rclpy  # Replaces rospy
-from rclpy.node import Node
-from simulator import Simulator
+import rclpy  # Import ROS2 client library instead of rospy
+from simulator import Simulator  # Import Simulator from the local module (unchanged)
 
-class SimulationNode(Node):
-    """
-    ROS 2 node that initializes and runs the Simulator.
-    """
-    def __init__(self):
-        super().__init__('simulation_node')
-
-        self.get_logger().info("Simulation node started")
-
-        # Declare parameters from YAML
-        self.declare_parameter("throttle_noise_sigma", 0.0)
-        self.declare_parameter("steer_noise_sigma", 0.0)
-        self.declare_parameter("latency", 0.0)
-        self.declare_parameter("odom_topic", "/Simulation/Pose")
-        self.declare_parameter("control_topic", "/Control")
-        self.declare_parameter("pub_rate", 30)
-        self.declare_parameter("init_x", 0.0)
-        self.declare_parameter("init_y", 0.0)
-        self.declare_parameter("init_yaw", 0.0)
-
-        # Get parameter values
-        throttle_noise_sigma = self.get_parameter("throttle_noise_sigma").value
-        steer_noise_sigma = self.get_parameter("steer_noise_sigma").value
-        latency = self.get_parameter("latency").value
-        odom_topic = self.get_parameter("odom_topic").value
-        control_topic = self.get_parameter("control_topic").value
-        pub_rate = self.get_parameter("pub_rate").value
-        init_x = self.get_parameter("init_x").value
-        init_y = self.get_parameter("init_y").value
-        init_yaw = self.get_parameter("init_yaw").value
-
-        # Initialize the Simulator with parameters
-        self.simulator = Simulator(
-            odom_topic=odom_topic,
-            control_topic=control_topic,
-            pub_rate=pub_rate,
-            init_x=init_x,
-            init_y=init_y,
-            init_yaw=init_yaw,
-            throttle_noise_sigma=throttle_noise_sigma,
-            steer_noise_sigma=steer_noise_sigma,
-            latency=latency
-        )
-
-def main():
-    rclpy.init()
-    node = SimulationNode()
-
+def main(args=None):
+    # Initialize the ROS2 client library.
+    # In ROS1, we used rospy.init_node; in ROS2, we initialize with rclpy.init().
+    rclpy.init(args=args)
+    
+    # Create an instance of the Simulator node.
+    # In ROS2, Simulator is now a subclass of rclpy.node.Node, making it a proper ROS2 node.
+    node = Simulator()
+    
+    # Log an informational message using the ROS2 logging system.
+    # In ROS1, we used rospy.loginfo; here we use node.get_logger().info().
+    node.get_logger().info("Start simulation node")
+    
     try:
-        rclpy.spin(node)  # Keeps the node running
+        # Spin the node to process callbacks.
+        # In ROS1, we would use rospy.spin(), but in ROS2 we use rclpy.spin(node).
+        rclpy.spin(node)
     except KeyboardInterrupt:
-        node.get_logger().info("Shutting down simulation node...")
+        # Handle shutdown gracefully if the node is interrupted (e.g., by Ctrl+C).
+        node.get_logger().info("Simulation node interrupted by keyboard")
     finally:
+        # Cleanup: destroy the node and shut down the ROS2 client library.
+        # This is the equivalent of any rospy cleanup and ensures all resources are released.
         node.destroy_node()
         rclpy.shutdown()
 
